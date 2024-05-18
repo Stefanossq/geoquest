@@ -1,0 +1,16 @@
+{
+  "respostas_predefinidas": [
+    {
+      "respostas": ["20", "Masculino", "Não", "Imagem 1", "Frio", "Montanhas", "Caminhadas", "Sim"],
+      "geoparque_recomendado": "CERRO DO BUGIO"
+    },
+    {
+      "respostas": ["35", "Feminino", "Sim", "Imagem 3", "Tropical", "Praias", "Surfar", "Sim"],
+      "geoparque_recomendado": "PARQUE DAS CONCHAS"
+    },
+    {
+      "respostas": ["50", "Outro", "Não", "Imagem 2", "Temperado", "Florestas", "Acampar", "Não"],
+      "geoparque_recomendado": "GEOPARQUE DAS QUEDAS"
+    }
+  ]
+}
