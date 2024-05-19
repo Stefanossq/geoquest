@@ -7,6 +7,7 @@
       <a href="https://vuejs.org/" target="_blank" rel="noopener">Vue 3</a>.
     </h3>
   </div>
+  <button class="btn btn-primary">Button</button>
 </template>
 
 <style scoped>

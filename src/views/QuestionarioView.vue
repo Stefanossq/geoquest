@@ -1,8 +1,8 @@
 <template>
-  <div>
+  <div class="p-4 max-w-lg mx-auto">
     <!-- Exibição do questionário -->
-    <div v-if="indicePerguntaAtual < perguntas.length">
-      <h2>{{ perguntas[indicePerguntaAtual].titulo }}</h2>
+    <div v-if="indicePerguntaAtual < perguntas.length" class="card shadow-lg p-6">
+      <h2 class="text-2xl font-bold mb-4">{{ perguntas[indicePerguntaAtual].titulo }}</h2>
       <div v-if="perguntas[indicePerguntaAtual].tipo === 'numero'">
         <input
           type="number"
@@ -10,34 +10,61 @@
           :min="perguntas[indicePerguntaAtual].min"
           :max="perguntas[indicePerguntaAtual].max"
           @input="atualizarResposta($event.target.value)"
-          :class="{ 'input-error': !respostas[indicePerguntaAtual] && attemptedSubmit }"
+          @blur="validateField"
+          :class="[
+            'input input-bordered w-full mb-2',
+            { 'input-error': !respostas[indicePerguntaAtual] && attemptedSubmit }
+          ]"
         />
-        <span v-if="!respostas[indicePerguntaAtual] && attemptedSubmit" class="error-msg"
+        <span v-if="!respostas[indicePerguntaAtual] && attemptedSubmit" class="text-error text-sm"
           >Este campo é obrigatório.</span
         >
       </div>
       <div v-else-if="perguntas[indicePerguntaAtual].tipo === 'select'">
         <select
           v-model="respostas[indicePerguntaAtual]"
-          :class="{ 'input-error': !respostas[indicePerguntaAtual] && attemptedSubmit }"
+          @blur="validateField"
+          :class="[
+            'select select-bordered w-full mb-2',
+            { 'input-error': !respostas[indicePerguntaAtual] && attemptedSubmit }
+          ]"
         >
           <option disabled value="">{{ perguntas[indicePerguntaAtual].placeholder }}</option>
           <option v-for="opcao in perguntas[indicePerguntaAtual].opcoes" :key="opcao">
             {{ opcao }}
           </option>
         </select>
-        <span v-if="!respostas[indicePerguntaAtual] && attemptedSubmit" class="error-msg"
+        <span v-if="!respostas[indicePerguntaAtual] && attemptedSubmit" class="text-error text-sm"
           >Este campo é obrigatório.</span
         >
       </div>
-      <button @click="proximaPergunta">Próxima</button>
-      <div class="progress">Pergunta {{ indicePerguntaAtual + 1 }} de {{ perguntas.length }}</div>
+      <div class="flex justify-between">
+        <button
+          class="btn btn-secondary mt-4"
+          @click="voltarPergunta"
+          v-if="indicePerguntaAtual > 0"
+        >
+          Voltar
+        </button>
+        <button class="btn btn-primary mt-4" @click="proximaPergunta">Próxima</button>
+      </div>
+      <progress
+        class="progress progress-primary w-full mt-4"
+        :value="indicePerguntaAtual + 1"
+        :max="perguntas.length"
+      ></progress>
+      <div class="text-center mt-4 text-sm">
+        Pergunta {{ indicePerguntaAtual + 1 }} de {{ perguntas.length }}
+      </div>
     </div>
 
     <!-- Exibição do resultado -->
-    <div v-else>
-      <h2>Geoparque Recomendado: {{ geoparqueRecomendado }}</h2>
-      <button @click="reiniciarQuestionario">Reiniciar</button>
+    <div v-else class="card shadow-lg p-6 text-center">
+      <h2 class="text-2xl font-bold mb-4">Geoparque Recomendado: {{ geoparqueRecomendado }}</h2>
+      <p v-if="geoparqueRecomendadoInfo">{{ geoparqueRecomendadoInfo }}</p>
+      <button class="btn btn-secondary w-full mt-4" @click="reiniciarQuestionario">
+        Reiniciar
+      </button>
     </div>
   </div>
 </template>
@@ -96,6 +123,7 @@ export default {
       respostas: Array(8).fill(''), // Preenche com strings vazias inicialmente
       indicePerguntaAtual: 0,
       geoparqueRecomendado: null,
+      geoparqueRecomendadoInfo: null,
       respostasPredefinidas: [],
       attemptedSubmit: false
     }
@@ -117,6 +145,14 @@ export default {
         }
       }
     },
+    voltarPergunta() {
+      if (this.indicePerguntaAtual > 0) {
+        this.indicePerguntaAtual--
+      }
+    },
+    validarCampo() {
+      this.attemptedSubmit = !this.respostas[this.indicePerguntaAtual]
+    },
     avaliarResultado() {
       const respostasUsuario = this.respostas.map((resposta) => String(resposta).trim())
       for (const respostaPredefinida of this.respostasPredefinidas) {
@@ -132,15 +168,18 @@ export default {
         }
         if (match) {
           this.geoparqueRecomendado = respostaPredefinida.geoparque_recomendado
+          this.geoparqueRecomendadoInfo = respostaPredefinida.info // Supondo que exista uma descrição
           return
         }
       }
       this.geoparqueRecomendado = 'Nenhum geoparque encontrado para as suas respostas.'
+      this.geoparqueRecomendadoInfo = null
     },
     reiniciarQuestionario() {
       this.indicePerguntaAtual = 0
       this.respostas = Array(this.perguntas.length).fill('')
       this.geoparqueRecomendado = null
+      this.geoparqueRecomendadoInfo = null
       this.attemptedSubmit = false
     }
   }
@@ -149,13 +188,9 @@ export default {
 
 <style scoped>
 .input-error {
-  border: 1px solid red;
+  border-color: #e3342f; /* Usando a cor de erro padrão do DaisyUI */
 }
-.error-msg {
-  color: red;
-  font-size: 12px;
-}
-.progress {
-  margin-top: 20px;
+.text-error {
+  color: #e3342f;
 }
 </style>
