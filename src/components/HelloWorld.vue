@@ -1,40 +1,60 @@
 <template>
-  <div class="greetings">
-    <h1 class="green">GEOQUEST</h1>
-    <h3>
-      GEOQUEST! Descubra o geoparque que mais combina com você!
-      <a href="https://vitejs.dev/" target="_blank" rel="noopener">Vite</a> +
-      <a href="https://vuejs.org/" target="_blank" rel="noopener">Vue 3</a>.
-    </h3>
+  <div class="hero min-h-screen bg-base-200">
+    <div class="hero-content text-center">
+      <div class="max-w-md">
+        <h1 class="text-5xl font-bold mb-5">GeoQuest</h1>
+        <transition name="fade" mode="out-in">
+          <p v-if="currentPhrase" :key="currentPhrase" class="text-lg font-semibold">
+            {{ currentPhrase }}
+          </p>
+        </transition>
+      </div>
+    </div>
   </div>
-  <button class="btn btn-primary">Button</button>
 </template>
 
-<style scoped>
-h1 {
-  font-weight: 500;
-  font-size: 2.6rem;
-  position: relative;
-  top: -10px;
-}
-
-h3 {
-  font-size: 1.2rem;
-}
-
-.green {
-  color: green; /* Mantém a cor verde */
-}
-
-.greetings h1,
-.greetings h3 {
-  text-align: center;
-}
-
-@media (min-width: 1024px) {
-  .greetings h1,
-  .greetings h3 {
-    text-align: left;
+<script>
+export default {
+  data() {
+    return {
+      phrases: [
+        'Explore as maravilhas dos geoparques',
+        'Descubra trilhas incríveis',
+        'Conheça a geologia local',
+        'Participe de atividades educacionais',
+        'Aventuras ao ar livre',
+        'Preserve a natureza e aprenda',
+        'Planeje sua visita a um geoparque'
+      ],
+      currentPhraseIndex: 0
+    }
+  },
+  computed: {
+    currentPhrase() {
+      return this.phrases[this.currentPhraseIndex]
+    }
+  },
+  mounted() {
+    this.startPhraseRotation()
+  },
+  methods: {
+    startPhraseRotation() {
+      setInterval(() => {
+        this.currentPhraseIndex = (this.currentPhraseIndex + 1) % this.phrases.length
+      }, 3000) // Troca de frase a cada 3 segundos
+    }
   }
+}
+</script>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
